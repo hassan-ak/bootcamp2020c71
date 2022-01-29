@@ -69,3 +69,7 @@
       return randomName();
     };
     ```
+
+11. Deploy the app using `cdk deploy`
+12. Test using console
+13. Destroy the app using `cdk destory`

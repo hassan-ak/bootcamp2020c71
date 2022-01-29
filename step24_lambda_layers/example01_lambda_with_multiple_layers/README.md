@@ -1,14 +1,61 @@
-# Welcome to your CDK TypeScript project!
+# Step24-0 Lambda with multiple layers
 
-This is a blank project for TypeScript development with CDK.
+## Reading Material
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+- [How to use layers with Lambda functions?](https://www.youtube.com/watch?v=i12H4cUFudU&ab_channel=BiteSizeAcademy)
 
-## Useful commands
+## Steps to code
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+1. Create a new directory using `mkdir example01_lambda_with_multiple_layers`
+2. Navigate to newly created directory using `cd example01_lambda_with_multiple_layers`
+3. Create new cdk app using `cdk init app --language typescript`
+4. Auto compile the code using `npm run watch`
+5. Install lambda module in the stack using `npm i @aws-cdk/aws-lambda` and update "./lib/example01_lambda_with_multiple_layers-stack.ts" to create a lambda function
+
+   ```js
+   import * as lambda from '@aws-cdk/aws-lambda';
+   new lambda.Function(this, 'LambdaWithLayer', {
+     runtime: lambda.Runtime.NODEJS_12_X,
+     code: lambda.Code.fromAsset('lambda-fns'),
+     handler: 'lambda.handler',
+     layers: [httpLayer, nameGenerator],
+   });
+   ```
+
+6. Update "./lib/example01_lambda_with_multiple_layers-stack.ts" to create a lambda layers
+
+   ```js
+   const httpLayer = new lambda.LayerVersion(this, 'HttpLayer', {
+     code: lambda.Code.fromAsset('lambda-layers/http'),
+   });
+   const nameGenerator = new lambda.LayerVersion(this, 'NameGeneratorLayer', {
+     code: lambda.Code.fromAsset('lambda-layers/nameGenerator'),
+   });
+   ```
+
+7. Create "./lambda-fns/lambda.ts" to define lambda handler
+
+   ```js
+   const random_name = require('/opt/randomName');
+   const axios = require('axios');
+   exports.handler = async (event: any, context: any) => {
+     const name = random_name.getName();
+     const result = await axios.get(
+       'https://jsonplaceholder.typicode.com/todos/1'
+     );
+
+     console.log('Random Name ==>', name);
+     console.log('Random Fetch ==>', result.data);
+
+     return {
+       statusCode: 200,
+       headers: { 'Content-Type': 'application/json' },
+       body: {
+         randomName: name,
+         randomFetch: result.data,
+       },
+     };
+   };
+   ```
+
+8.

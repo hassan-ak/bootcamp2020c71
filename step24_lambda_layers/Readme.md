@@ -14,3 +14,4 @@ Lambda is a computing instruct. There are lambda layers and extensions first run
 ## Sections
 
 - [Lambda with single layer](./example00_lambda_with_single_layer)
+- [Lambda with multiple layers](./Example01_lambda_with_multiple_layers)

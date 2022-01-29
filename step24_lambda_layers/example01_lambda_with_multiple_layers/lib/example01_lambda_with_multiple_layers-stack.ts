@@ -1,15 +1,26 @@
 import * as cdk from '@aws-cdk/core';
-// import * as sqs from '@aws-cdk/aws-sqs';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 export class Example01LambdaWithMultipleLayersStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    // LAmbda Layers
+    const httpLayer = new lambda.LayerVersion(this, 'HttpLayer', {
+      code: lambda.Code.fromAsset('lambda-layers/http'),
+      // compatibleRuntimes: [lambda.Runtime.NODEJS_12_X], // optional
+    });
+    const nameGenerator = new lambda.LayerVersion(this, 'NameGeneratorLayer', {
+      code: lambda.Code.fromAsset('lambda-layers/nameGenerator'),
+      // compatibleRuntimes: [lambda.Runtime.NODEJS_12_X], // optional
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'Example01LambdaWithMultipleLayersQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    // Lambda function
+    new lambda.Function(this, 'LambdaWithLayer', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromAsset('lambda-fns'),
+      handler: 'lambda.handler',
+      layers: [httpLayer, nameGenerator],
+    });
   }
 }

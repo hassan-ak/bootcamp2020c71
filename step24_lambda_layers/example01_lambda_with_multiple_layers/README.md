@@ -58,4 +58,14 @@
    };
    ```
 
-8.
+8. Libraries to be used in lambda function can be stored seprately as lambda layer so create a new folder using `mkdir lambda-layers/http/nodejs` and navigate to this folder using `cd lambda-layers/http/nodejs`then initilize it as a npm project using `npm init --yes`. Install the required packages in this folder such as axios using `npm i axios`
+
+9. Create "lambda-layers/nameGenerator/nodejs" and install npm package using `npm i node-random-name`
+10. Create "./lambda-layers/nameGenerator/randomName.ts" to define a local layer
+
+    ```js
+    const randomName = require('node-random-name');
+    exports.getName = () => {
+      return randomName();
+    };
+    ```
